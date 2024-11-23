@@ -20,30 +20,27 @@ params_sys5:    .space  8 ; misto pro ulozeni adresy pocatku
                 .text
 
 main:
-    DADDI  r1, r0, 1   ;// initialize loop cnt
+    DADDI  r1, r0, 0 
     DADDI  r2, r0, 1   ;// initialize loop check
     DADDI  r3, r0, 3   ;// key length
-    
-    
+    DADDI  r6, r0, -1  ;// switcher
+
     my_loop:
-        LB     r5, msg(r1)     ;// load byte from msg on pos *r1
-        BEQZ   r5, end        ; finish - null terminator encountered on input 
-        LB     r6, key(r1)
+        LB     r5, msg(r1)    ;// Load byte from 'msg' at position *R1
+
+        DSUB   r6, r0, r6     ; inverting switcher
 
         XORI   r2, r1, 0x1E   ; check  - comparing r1 with 30, r2=0 if true
-        BEQ    r2, r0, end     ; finish - max loop iterations
+        BEQ    r2, r0, end    ; finish - max loop iterations
+        BEQZ   r5, end        ; finish - '\0' encountered on input 
 
-        ; if end of string -> check for ascii '0' ? or '\0'
-        ; The .asciiz directive behaves exactly like the .ascii command, with the difference
-        ; that it automatically ends the string with a null byte.
-        ; load next value
+        use_key_3: ; it wasn't 1st or 2nd
+            J write_continue ; logic...
         use_key_1:
-            ; logic...
+            J write_continue ; logic...
         use_key_2:
-            ; logic...
-        use_key_3:
-            ; logic...
-        
+            J write_continue ; logic...
+
         ; if greater/lower -> jump to wrap_around_+
         wrap_around_greater: ; case - above
             ; logic...
@@ -58,8 +55,9 @@ main:
             ; switcher
 
     end:
-                daddi   r4, r0, cipher ; vypis: adresa cipher do r4
-                jal     print_string ; vypis pomoci print_string - viz nize
+                SB R0, cipher(r1)   ; add '\0' to encrypted login
+                DADDI   r4, r0, cipher ; vypis: adresa cipher do r4
+                JAL     print_string ; vypis pomoci print_string - viz nize
 
 
 ; NASLEDUJICI KOD NEMODIFIKUJTE!
