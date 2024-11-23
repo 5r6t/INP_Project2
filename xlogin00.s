@@ -9,9 +9,7 @@ msg:            .asciiz "jaroslavmervart" ; sem doplnte vase "jmenoprijmeni"
 cipher:         .space  31 ; misto pro zapis zasifrovaneho textu
 
 ; zde si muzete nadefinovat vlastni promenne ci konstanty,
-key:            .word 13, 5, 18 ; m , e, r -> key[i] - 'a' + 1
-switcher:       .word 1 ; used for inverting values, switcher * key[i]
-
+key:            .word 13, 5, 18   ; m , e, r -> 109, 101, 114 -> key[i] - 'a' + 1
 
 
 params_sys5:    .space  8 ; misto pro ulozeni adresy pocatku
@@ -22,7 +20,19 @@ params_sys5:    .space  8 ; misto pro ulozeni adresy pocatku
                 .text
 
 main:
+    DADDI  r1, r0, 1   ;// initialize loop cnt
+    DADDI  r2, r0, 1   ;// initialize loop check
+    DADDI  r3, r0, 3   ;// key length
+    
+    
     my_loop:
+        LB     r5, msg(r1)     ;// load byte from msg on pos *r1
+        BEQZ   r5, end        ; finish - null terminator encountered on input 
+        LB     r6, key(r1)
+
+        XORI   r2, r1, 0x1E   ; check  - comparing r1 with 30, r2=0 if true
+        BEQ    r2, r0, end     ; finish - max loop iterations
+
         ; if end of string -> check for ascii '0' ? or '\0'
         ; The .asciiz directive behaves exactly like the .ascii command, with the difference
         ; that it automatically ends the string with a null byte.
@@ -42,9 +52,10 @@ main:
             ; logic...
 
         write_continue: ; condition not met, no need for logic, 
+            SB      r5, cipher(r1)  ;// store byte in r5 to cipher on pos *r1
+            DADDI   r1, r1, 1 ; increase loop counter
+            J       my_loop       ; iterate
             ; switcher
-
-            ;write to cipher and iterate
 
     end:
                 daddi   r4, r0, cipher ; vypis: adresa cipher do r4
