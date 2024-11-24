@@ -20,26 +20,40 @@ params_sys5:    .space  8 ; misto pro ulozeni adresy pocatku
                 .text
 
 main:
-    DADDI  r1, r0, 0 
-    DADDI  r2, r0, 1   ;// initialize loop check
-    DADDI  r3, r0, 3   ;// key length
-    DADDI  r6, r0, -1  ;// switcher
+    DADDI  r1, r0, 0   ; init loop counter
+    DADDI  r2, r0, 1   ; initialize loop check
+    DADDI  r3, r0, 3   ; key length
+    DADDI  r6, r0, -1  ; switcher
 
     my_loop:
-        LB     r5, msg(r1)    ;// Load byte from 'msg' at position *R1
+        LB     r5, msg(r1)    ; Load byte from 'msg' at position *R1
 
         DSUB   r6, r0, r6     ; inverting switcher
 
         XORI   r2, r1, 0x1E   ; check  - comparing r1 with 30, r2=0 if true
         BEQ    r2, r0, end    ; finish - max loop iterations
+
         BEQZ   r5, end        ; finish - '\0' encountered on input 
 
-        use_key_3: ; it wasn't 1st or 2nd
+        modulo:
+            DADDIU  r4, r1, 0 ; copy loop_cnt to r4 
+            DDIVU   r4, r3    ; R4 / 3 -> HI
+            MFHI    r4        ; HI -> R4 - cases: 0->key_1(jump), 1->key_2(jump), 2->key_3 (fall through)
+
+            BNEZ    r4, key_2       ; jump to key_2 if R4 != 0
+            
+        key_1:
             J write_continue ; logic...
-        use_key_1:
+        key_2:
             J write_continue ; logic...
-        use_key_2:
+        key_3:
+            ; switcher * shift ( shifter can be negative)
+
+            ; r5 * switcher * shift
+            
             J write_continue ; logic...
+
+
 
         ; if greater/lower -> jump to wrap_around_+
         wrap_around_greater: ; case - above
