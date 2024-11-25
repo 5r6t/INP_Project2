@@ -32,10 +32,10 @@ int main (void) {
         }
 
         if (curr_val > 122) { // greater than z
-            curr_val = 'a' + (curr_val - 'z' - 1); // reach around; example: str_i = 114, +18 = 132, 
+            curr_val = ('a' - 'z' - 1) + curr_val; // reach around; example: str_i = 114, +18 = 132, 
         }
         else if (curr_val < 97) { // smaller than a
-            curr_val= 'z' - ('a' - curr_val - 1); // reach around; example: str_i_new = 95, 97 - 95 = 2; z - 2 = x
+            curr_val= ('z' - 'a' - 1) + curr_val; // reach around; example: str_i_new = 95, 97 - 95 = 2; z - 2 = x
         }
         cipher[i] = curr_val;
         switcher = switcher * (-1);
