@@ -24,14 +24,16 @@ main:
     DADDIU r1, r0, key
     DADDIU r2, r0, wrap_LO_HI
     DADDIU r3, r0, ascii_a_b
+
     LW     r8, 0(r1)   ; store key in temporary register       
     LW     r9, 8(r1)   ; store key in temporary register     
     LW     r10, 16(r1) ; store key in temporary register
+
     LW     r11, 0(r2)  ; store wrap_lower  constant
     LW     r12, 8(r2)  ; store wrap_higher constant
 
-    DADDI  r1, r0, 0   ; init loop counter
-    DADDI  r2, r0, 1   ; initialize loop check
+    DADDI  r1, r0, 0   ; prep loop counter
+    DADDI  r2, r0, 1   ; prep loop check
     DADDI  r3, r0, 3   ; key length
     DADDI  r6, r0, -1  ; switcher
 
@@ -69,6 +71,8 @@ main:
         ; > case3: r5 is in interval <'a','z'> jump to write continue
         wrap_check:
             MFLO   r7               ; switch * key stored
+            DADDI   r1, r1, 1       ; INCREMENT loop counter // here for optimalization
+            
             DADD   r5, r5, r7       ; char + (switch*key)
 
             SLTIU r15, r5, 97 ; r15 = 1 when r5 < 'a', else r15 = 0
@@ -88,7 +92,6 @@ main:
 
         write_continue:
             SB      r5, cipher(r1)  ; store byte in r5 to cipher on pos *r1
-            DADDI   r1, r1, 1       ; increase loop counter
             J       my_loop         ; iterate
 
     end:
