@@ -11,8 +11,7 @@ cipher:         .space  31 ; misto pro zapis zasifrovaneho textu
 ; zde si muzete nadefinovat vlastni promenne ci konstanty,
 ; m , e, r -> 109, 101, 114 -> key[i] - 'a' + 1
 key:            .word 13, 5, 18; 'm', 'e', 'r'
-    ;('a' - 'z' - 1)
-    ;('z' - 'a' - 1)
+
 wrap_LO_HI:      .word 24, -26 ; ('z' - 'a' - 1), ('a' - 'z' - 1)
 ascii_a_b:       .word 97, 122
 
@@ -73,10 +72,10 @@ main:
             DADD   r5, r5, r7       ; char + (switch*key)
 
             SLTIU r15, r5, 97 ; r15 = 1 when r5 < 'a', else r15 = 0
-            BNEZ r15, wrap_lower 
+            SLTIU r16, r5, 123 ; r15 = 1 when r5 < 'z'+1, else r15 = 0
 
-            SLTIU r15, r5, 123 ; r15 = 1 when r5 < 'z'+1, else r15 = 0
-            BEQZ r15, wrap_higher
+            BNEZ r15, wrap_lower 
+            BEQZ r16, wrap_higher
 
             J write_continue
         ; > case2: r5 < 97 ---> r5 + ('z' - 'a' - 1) >>> 24 + r5
