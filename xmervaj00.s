@@ -69,11 +69,11 @@ main:
             J write_continue   ; case_correct: R5 is in <'a','z'>
         
             wrap_lower: ; R5 < 97   --> R5 + ('z' - 'a' + 1) >>> R5 + 26
-                DADDI   r5, r5, 26 ; R11 = 24
+                DADDI   r5, r5, 26
                 J write_continue
             
             wrap_higher: ; R5 > 122 --> R5 + ('a' - 'z' - 1) >>> R5 -26
-                DADDI   r5, r5, -26 ; R12 = -26
+                DADDI   r5, r5, -26
 
         write_continue:
             SB      r5, cipher(r1)  ; store byte from R5 to cipher on pos LOOP_COUNTER
