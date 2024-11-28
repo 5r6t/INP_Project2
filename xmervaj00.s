@@ -6,14 +6,12 @@
 ; DATA SEGMENT
                 .data
 msg:            .asciiz "jaroslavmervart" 
+
 cipher:         .space  31 ; misto pro zapis zasifrovaneho textu
 
 ; zde si muzete nadefinovat vlastni promenne ci konstanty,
 
 key:            .word 13, 5, 18   ; 'm' , 'e', 'r' = 109, 101, 114 -> key[i] - 'a' + 1
-
-wrap_LO_HI:      .word 24, -26    ; ('z' - 'a' - 1), ('a' - 'z' - 1)
-ascii_a_b:       .word 97, 122
 
 params_sys5:    .space  8 ; misto pro ulozeni adresy pocatku
                           ; retezce pro vypis pomoci syscall 5
@@ -27,16 +25,11 @@ main:
     DADDI  r6, r0, -1      ; switcher
 
     DADDIU r4, r0, key
-    DADDIU r5, r0, wrap_LO_HI
 
     LW     r8, 0(r4)        ; store key in tmp R8      
     LW     r9, 8(r4)        ; store key in tmp R9  
     LW     r10, 16(r4)      ; store key in tmp R10
 
-    LW     r11, 0(r5)       ; store wrap_lower  constant
-    LW     r12, 8(r5)       ; store wrap_higher constant
-
-    
     my_loop:
         LB     r5, msg(r1)    ; Load byte from 'msg' at position R1
         DSUB   r6, r0, r6     ; invert SWITCHER (always -1 or 1)
@@ -76,11 +69,11 @@ main:
             J write_continue   ; case_correct: R5 is in <'a','z'>
         
             wrap_lower: ; R5 < 97   --> R5 + ('z' - 'a' - 1) >>> R5 + 24
-                DADD   r5, r5, r11 ; R11 = 24
+                DADDI   r5, r5, 26 ; R11 = 24
                 J write_continue
             
             wrap_higher: ; R5 > 122 --> R5 + ('a' - 'z' - 1) >>> R5 -26
-                DADD   r5, r5, r12 ; R12 = -26
+                DADDI   r5, r5, -26 ; R12 = -26
 
         write_continue:
             SB      r5, cipher(r1)  ; store byte from R5 to cipher on pos LOOP_COUNTER

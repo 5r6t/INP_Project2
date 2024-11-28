@@ -8,9 +8,11 @@
 int main (void) {
     // data
     char msg[] = "jaroslavmervart";
+    //char msg[] = "michalbidlo";
     char cipher[31] = { '\0' };
 
     char key[4]= {"mer"};
+    //char key[4]= {"bid"};
     int shiftM = key[0] - 'a' + 1; // 2
     int shiftE = key[1] - 'a' + 1; // 9
     int shiftR = key[2] - 'a' + 1; // 4
@@ -32,10 +34,10 @@ int main (void) {
         }
 
         if (curr_val > 122) { // greater than z
-            curr_val = ('a' - 'z' - 1) + curr_val; // reach around; example: str_i = 114, +18 = 132, 
+            curr_val = -26 + curr_val; // reach around; example: str_i = 114, +18 = 132, 
         }
         else if (curr_val < 97) { // smaller than a
-            curr_val= ('z' - 'a' - 1) + curr_val; // reach around; example: str_i_new = 95, 97 - 95 = 2; z - 2 = x
+            curr_val= 26 + curr_val; // reach around; example: str_i_new = 95, 97 - 95 = 2; z - 2 = x
         }
         cipher[i] = curr_val;
         switcher = switcher * (-1);
