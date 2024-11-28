@@ -68,7 +68,7 @@ main:
 
             J write_continue   ; case_correct: R5 is in <'a','z'>
         
-            wrap_lower: ; R5 < 97   --> R5 + ('z' - 'a' - 1) >>> R5 + 24
+            wrap_lower: ; R5 < 97   --> R5 + ('z' - 'a' + 1) >>> R5 + 26
                 DADDI   r5, r5, 26 ; R11 = 24
                 J write_continue
             
