@@ -57,6 +57,4 @@ Encrypted text: `ozgfjhdzhjx`
 * Submit through STUDIS. Not compilable/launchable or crashing solutions will receive 0 points. $$\color{red}\text{Plagiarizers will be cleansed by the holy fire.}$$
 ![[EduMIPS64.v1.3.0.-.English.Manual.pdf#page=0]]
 
-
-
-
+# Evaluation 10/10
